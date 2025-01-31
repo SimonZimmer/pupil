@@ -35,7 +35,8 @@ namespace hidonash
             audioBuffers_.emplace_back(factory->createAudioBuffer(numChannels_, samplesPerBlock));
             for (auto ch = 0; ch < numChannels_; ++ch)
             {
-                delayProcessors_[ch].emplace_back(factory->createDelayProcessor(100000.0f, 0.0f, sampleRate));
+                delayProcessors_[ch].emplace_back(
+                    factory->createDelayProcessor(config::parameters::maxDistanceInSeconds, 0.0f, sampleRate));
                 gainProcessors_[ch].emplace_back(factory->createGainProcessor(0.0f, sampleRate));
             }
         }
@@ -55,7 +56,7 @@ namespace hidonash
 
                 for (auto ch = 0; ch < numChannels_; ++ch)
                 {
-                    delayProcessors_[ch][n]->setDelayInSamples(std::floor(memberParameterSet_.getDistance(n)));
+                    delayProcessors_[ch][n]->setDelayInSeconds(std::floor(memberParameterSet_.getDistance(n)));
                     delayProcessors_[ch][n]->process(*audioBuffers_[n]->getChannel(ch));
                     gainProcessors_[ch][n]->setGainDb(memberParameterSet_.getGain(n));
                     gainProcessors_[ch][n]->process(*audioBuffers_[n]->getChannel(ch));

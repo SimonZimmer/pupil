@@ -20,7 +20,7 @@ namespace hidonash
 
         [[nodiscard]] PitchShifterPtr createPitchShifter(double sampleRate, IFactory& factory) const override;
 
-        [[nodiscard]] DelayProcessorPtr createDelayProcessor(size_t maxDelaySamples, size_t delaySamples,
+        [[nodiscard]] DelayProcessorPtr createDelayProcessor(size_t maxDelaySeconds, size_t delaySeconds,
                                                              double sampleRate) const override;
 
         [[nodiscard]] GainProcessorPtr createGainProcessor(float gainValue, double sampleRate) const override;

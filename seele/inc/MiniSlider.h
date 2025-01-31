@@ -69,7 +69,7 @@ namespace hidonash
         {
             setSliderStyle(juce::Slider::LinearBar);
             setTextBoxStyle(NoTextBox, false, 0, 0);
-            setDoubleClickReturnValue(true, config::parameters::minDistanceInSamples);
+            setDoubleClickReturnValue(true, config::parameters::minDistanceInSeconds);
             setRange(0.f, 100.f, 0.01f);
             setTooltip(tooltip);
             setLookAndFeel(&lookAndFeel_);

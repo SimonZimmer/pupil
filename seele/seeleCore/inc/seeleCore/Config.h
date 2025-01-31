@@ -16,9 +16,9 @@ namespace hidonash
             constexpr auto summonStatePrefix = "summonState_";
 
             constexpr auto distancePrefix = "distance_";
-            constexpr auto maxDistanceInSamples = 20000.0f;
-            constexpr auto minDistanceInSamples = 0.0f;
-            constexpr auto defaultDistanceInSamples = 0.0f;
+            constexpr auto maxDistanceInSeconds = 2.0f;
+            constexpr auto minDistanceInSeconds = 0.0f;
+            constexpr auto defaultDistanceInSeconds = 0.0f;
 
             constexpr auto levelPrefix = "level_";
             constexpr auto maxLevelDb = 6.0f;

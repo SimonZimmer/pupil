@@ -41,10 +41,10 @@ namespace hidonash
         return std::make_unique<PitchShifterManager>(sampleRate, numChannels, factory);
     }
 
-    DelayProcessorPtr Factory::createDelayProcessor(size_t maxDelaySamples, size_t delaySamples,
+    DelayProcessorPtr Factory::createDelayProcessor(size_t maxDelaySeconds, size_t delaySeconds,
                                                     double sampleRate) const
     {
-        return std::make_unique<DelayProcessor>(maxDelaySamples, delaySamples, sampleRate);
+        return std::make_unique<DelayProcessor>(maxDelaySeconds, delaySeconds, sampleRate);
     }
 
     GainProcessorPtr Factory::createGainProcessor(float gainValue, double sampleRate) const

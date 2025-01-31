@@ -8,13 +8,13 @@ namespace hidonash
         constexpr auto interpolationRate = 0.001f;
     }
 
-    DelayProcessor::DelayProcessor(size_t maxDelaySamples, float delaySamples, double sampleRate)
-    : circularBuffer_(maxDelaySamples + 1, 0.0f)
+    DelayProcessor::DelayProcessor(float maxDelaySeconds, float delaySeconds, double sampleRate)
+    : sampleRate_(sampleRate)
+    , circularBuffer_(convertSecondsToSamples(maxDelaySeconds) + 1, 0.0f)
     , writeIndex_(0)
     , readPosition_(0.0f)
-    , currentDelay_(delaySamples)
-    , targetDelay_(delaySamples)
-    , sampleRate_(sampleRate)
+    , currentDelay_(convertSecondsToSamples(delaySeconds))
+    , targetDelay_(convertSecondsToSamples(delaySeconds))
     {
         readPosition_ =
             fmod(writeIndex_ - currentDelay_ + circularBuffer_.size(), static_cast<float>(circularBuffer_.size()));
@@ -55,11 +55,18 @@ namespace hidonash
         }
     }
 
-    void DelayProcessor::setDelayInSamples(int delayInSamples)
+    void DelayProcessor::setDelayInSeconds(int delayInSeconds)
     {
+        const auto delayInSamples = convertSecondsToSamples(delayInSeconds);
+
         if (delayInSamples >= circularBuffer_.size() - 1)
             return;
 
         targetDelay_ = delayInSamples;
+    }
+
+    float DelayProcessor::convertSecondsToSamples(float seconds)
+    {
+        return static_cast<float>(sampleRate_ * static_cast<double>(seconds));
     }
 }

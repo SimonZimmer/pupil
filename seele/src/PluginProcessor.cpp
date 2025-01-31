@@ -148,9 +148,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout NewProjectAudioProcessor::cr
             "Seele " + std::to_string(n + 1) + " Summoned", true));
         parameters.emplace_back(std::make_unique<juce::AudioParameterFloat>(
             hidonash::config::parameters::distancePrefix + std::to_string(n),
-            "Seele " + std::to_string(n + 1) + " Distance", hidonash::config::parameters::minDistanceInSamples,
-            hidonash::config::parameters::maxDistanceInSamples,
-            hidonash::config::parameters::defaultDistanceInSamples));
+            "Seele " + std::to_string(n + 1) + " Distance", hidonash::config::parameters::minDistanceInSeconds,
+            hidonash::config::parameters::maxDistanceInSeconds,
+            hidonash::config::parameters::defaultDistanceInSeconds));
         parameters.emplace_back(std::make_unique<juce::AudioParameterFloat>(
             hidonash::config::parameters::levelPrefix + std::to_string(n), "Seele " + std::to_string(n + 1) + " Level",
             hidonash::config::parameters::minLevelDb, hidonash::config::parameters::maxLevelDb,
