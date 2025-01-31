@@ -4,14 +4,12 @@
 namespace hidonash::core
 {
     template<typename T>
-    InterpolatingValue<T>::InterpolatingValue(T value, double sampleRate,
-                                const std::chrono::milliseconds& duration)
+    InterpolatingValue<T>::InterpolatingValue(T value, double sampleRate, const std::chrono::milliseconds& duration)
     : currentValue_(value)
     , goalValue_(value)
     , durationInTicks_(static_cast<size_t>(static_cast<T>(duration.count()) / 1000.f * sampleRate))
     , step_((goalValue_ - currentValue_) / static_cast<T>(durationInTicks_))
-    {
-    }
+    {}
 
     template<typename T>
     InterpolatingValue<T>::operator T() const

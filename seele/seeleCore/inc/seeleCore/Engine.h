@@ -26,13 +26,11 @@ namespace hidonash
 
     private:
         std::vector<PitchShifterManagerPtr> pitchShifterManagers_;
-        std::vector<DelayProcessorPtr> delayProcessorsLeft_;
-        std::vector<DelayProcessorPtr> delayProcessorsRight_;
-        std::vector<GainProcessorPtr> gainProcessorsLeft_;
-        std::vector<GainProcessorPtr> gainProcessorsRight_;
+        std::vector<std::vector<DelayProcessorPtr>> delayProcessors_;
+        std::vector<std::vector<GainProcessorPtr>> gainProcessors_;
         std::vector<core::AudioBufferPtr> audioBuffers_;
         const IMemberParameterSet& memberParameterSet_;
-        core::AudioBuffer internalBuffer_;
+        core::AudioBuffer accumulationBuffer_;
         size_t numChannels_;
         double sampleRate_;
         std::vector<float> lastDistances_;

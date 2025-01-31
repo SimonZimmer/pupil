@@ -23,24 +23,27 @@ namespace hidonash
     Engine::Engine(const IMemberParameterSet& memberParameterSet, double sampleRate, int samplesPerBlock,
                    size_t numChannels, FactoryPtr factory)
     : memberParameterSet_(memberParameterSet)
-    , internalBuffer_(numChannels, samplesPerBlock)
+    , accumulationBuffer_(numChannels, samplesPerBlock)
     , numChannels_(numChannels)
     , sampleRate_(sampleRate)
     {
+        delayProcessors_.resize(numChannels_);
+        gainProcessors_.resize(numChannels_);
         for (auto n = 0; n < config::constants::numMembers; ++n)
         {
             pitchShifterManagers_.emplace_back(factory->createPitchShifterManager(sampleRate, numChannels_, *factory));
             audioBuffers_.emplace_back(factory->createAudioBuffer(numChannels_, samplesPerBlock));
-            delayProcessorsLeft_.emplace_back(factory->createDelayProcessor(100000.0f, 0.0f, sampleRate));
-            delayProcessorsRight_.emplace_back(factory->createDelayProcessor(100000.0f, 0.0f, sampleRate));
-            gainProcessorsLeft_.emplace_back(factory->createGainProcessor(0.0f, sampleRate));
-            gainProcessorsRight_.emplace_back(factory->createGainProcessor(0.0f, sampleRate));
+            for (auto ch = 0; ch < numChannels_; ++ch)
+            {
+                delayProcessors_[ch].emplace_back(factory->createDelayProcessor(100000.0f, 0.0f, sampleRate));
+                gainProcessors_[ch].emplace_back(factory->createGainProcessor(0.0f, sampleRate));
+            }
         }
     }
 
     void Engine::process(core::IAudioBuffer& inputBuffer)
     {
-        internalBuffer_.fill(0.0f);
+        accumulationBuffer_.fill(0.0f);
 
         int activeMembers = 0;
         for (auto n = 0; n < config::constants::numMembers; ++n)
@@ -49,23 +52,24 @@ namespace hidonash
                 audioBuffers_[n]->copyFrom(inputBuffer);
                 pitchShifterManagers_[n]->setPitchRatio(memberParameterSet_.getSanctity(n));
                 pitchShifterManagers_[n]->process(*audioBuffers_[n]);
-                delayProcessorsLeft_[n]->setDelayInSamples(std::floor(memberParameterSet_.getDistance(n)));
-                delayProcessorsRight_[n]->setDelayInSamples(std::floor(memberParameterSet_.getDistance(n)));
-                delayProcessorsLeft_[n]->process(*audioBuffers_[n]->getChannel(0));
-                delayProcessorsRight_[n]->process(*audioBuffers_[n]->getChannel(1));
-                gainProcessorsLeft_[n]->setGainDb(memberParameterSet_.getGain(n));
-                gainProcessorsRight_[n]->setGainDb(memberParameterSet_.getGain(n));
-                gainProcessorsLeft_[n]->process(*audioBuffers_[n]->getChannel(0));
-                gainProcessorsRight_[n]->process(*audioBuffers_[n]->getChannel(1));
-                internalBuffer_.add(*audioBuffers_[n], inputBuffer.getNumSamples());
+
+                for (auto ch = 0; ch < numChannels_; ++ch)
+                {
+                    delayProcessors_[ch][n]->setDelayInSamples(std::floor(memberParameterSet_.getDistance(n)));
+                    delayProcessors_[ch][n]->process(*audioBuffers_[n]->getChannel(ch));
+                    gainProcessors_[ch][n]->setGainDb(memberParameterSet_.getGain(n));
+                    gainProcessors_[ch][n]->process(*audioBuffers_[n]->getChannel(ch));
+                }
+
+                accumulationBuffer_.add(*audioBuffers_[n], inputBuffer.getNumSamples());
                 activeMembers++;
             }
 
         if (activeMembers <= 0)
             return;
 
-        internalBuffer_.multiply(1.f / static_cast<float>(activeMembers), internalBuffer_.getNumSamples());
+        accumulationBuffer_.multiply(1.f / static_cast<float>(activeMembers), accumulationBuffer_.getNumSamples());
 
-        inputBuffer.copyFrom(internalBuffer_);
+        inputBuffer.copyFrom(accumulationBuffer_);
     }
 }
