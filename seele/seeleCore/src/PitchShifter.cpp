@@ -46,7 +46,6 @@ namespace hidonash
 
             if (sampleCounter_ >= constants::fftFrameSize)
             {
-                sampleCounter_ = inFifoLatency_;
                 for (auto sa = 0; sa < constants::fftFrameSize; sa++)
                 {
                     fftWorkspace_[sa].real(fifoIn_[sa] * getWindowFactor(sa, constants::fftFrameSize));

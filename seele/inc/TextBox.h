@@ -1,9 +1,11 @@
 #pragma once
 
 
+#include <exception>
 #include <juce_gui_basics/juce_gui_basics.h>
 
 #include <GraphicAssets.h>
+#include <mutex>
 
 #include "Font.h"
 #include "UiConstants.h"
@@ -45,6 +47,15 @@ namespace hidonash
             slider_.addListener(this);
 
             addAndMakeVisible(label_);
+        }
+
+        ~TextBox()
+        {
+            try
+            {
+                slider_.removeListener(this);
+            } catch (...)
+            {}
         }
 
         void resized() override
