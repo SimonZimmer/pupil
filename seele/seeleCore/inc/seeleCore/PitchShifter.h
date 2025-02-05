@@ -22,7 +22,7 @@ namespace hidonash
 
         void process(core::IAudioBuffer::IChannel& channel) override;
 
-        void performPitchShift();
+        void performFFTProcessing();
 
         void setPitchRatio(float pitchRatio) override;
 
@@ -44,7 +44,5 @@ namespace hidonash
         std::array<float, config::constants::analysisSize> fifoIn_;
         std::array<float, config::constants::analysisSize> fifoOut_;
         std::array<float, 2 * config::constants::analysisSize> outputAccumulationBuffer_;
-
-        std::array<float, config::constants::analysisSize> processedSamples_;
     };
 }
