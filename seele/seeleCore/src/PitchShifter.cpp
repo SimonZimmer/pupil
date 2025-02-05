@@ -15,6 +15,9 @@ namespace hidonash
         {
             return (-.5 * cos(2. * M_PI * (double) k / (double) windowSize) + .5);
         }
+
+        constexpr float gainCompensationDb = 65.0f;
+        constexpr float dbConversionFactor = 20.0f;
     }
 
     PitchShifter::PitchShifter(double sampleRate, IFactory& factory)
@@ -22,61 +25,66 @@ namespace hidonash
     , factory_(factory)
     , synthesis_(factory_.createSynthesis(freqPerBin_, factory_.createAnalysis(freqPerBin_)))
     , pitchFactor_(1.0f)
-    , gainCompensation_(std::pow(10, (65. / 20.)))
-    , sampleCounter_(0)
+    , gainCompensation_(std::pow(10, (gainCompensationDb / dbConversionFactor)))
     , stepSize_(config::constants::fftFrameSize / config::constants::oversamplingFactor)
     , inFifoLatency_(config::constants::fftFrameSize - stepSize_)
     , fft_(std::make_unique<juce::dsp::FFT>(static_cast<int>(std::log2(constants::fftFrameSize))))
+    , inputBuffer_(constants::fftFrameSize)
+    , outputBuffer_(constants::fftFrameSize)
+    , processingBuffer_(constants::fftFrameSize)
+    {}
+
+    void PitchShifter::processFFTFrame()
     {
-        fifoIn_.fill(0.0f);
-        fifoOut_.fill(0.0f);
-        outputAccumulationBuffer_.fill(0.0f);
-        processedSamples_.fill(0.0f);
+        // Copy input samples to FFT workspace with windowing
+        for (size_t sa = 0; sa < constants::fftFrameSize; ++sa)
+        {
+            auto windowedSample = inputBuffer_.pop() * getWindowFactor(sa, constants::fftFrameSize);
+            fftWorkspace_[sa] = std::complex<float>(windowedSample, 0.0f);
+        }
+
+        // Perform FFT and pitch shifting
+        fft_->perform(fftWorkspace_.data(), fftWorkspace_.data(), false);
+        synthesis_->perform(fftWorkspace_.data(), pitchFactor_);
+        fft_->perform(fftWorkspace_.data(), fftWorkspace_.data(), true);
+
+        // Accumulate output with overlap-add method
+        accumulateOutputWithOverlap();
+    }
+
+    void PitchShifter::accumulateOutputWithOverlap()
+    {
+        // Accumulate output with windowing and normalization
+        for (size_t sa = 0; sa < constants::fftFrameSize; ++sa)
+        {
+            float accumulatedSample = getWindowFactor(sa, constants::fftFrameSize) * fftWorkspace_[sa].real() /
+                                      ((constants::fftFrameSize / 2) * constants::oversamplingFactor);
+            processingBuffer_.push(accumulatedSample);
+        }
+
+        // Push first stepSize samples to output buffer
+        for (size_t sa = 0; sa < stepSize_; ++sa)
+            outputBuffer_.push(processingBuffer_.pop());
     }
 
     void PitchShifter::process(core::IAudioBuffer::IChannel& channel)
     {
         const auto numSamples = channel.size();
 
-        for (auto sa = 0; sa < numSamples; sa++)
+        for (size_t sa = 0; sa < numSamples; ++sa)
         {
-            fifoIn_[sampleCounter_] = channel[sa];
-            processedSamples_[sa] = fifoOut_[sampleCounter_ - inFifoLatency_];
-            sampleCounter_++;
+            // Push input sample to input buffer
+            inputBuffer_.push(channel[sa]);
 
-            if (sampleCounter_ >= constants::fftFrameSize)
-            {
-                for (auto sa = 0; sa < constants::fftFrameSize; sa++)
-                {
-                    fftWorkspace_[sa].real(fifoIn_[sa] * getWindowFactor(sa, constants::fftFrameSize));
-                    fftWorkspace_[sa].imag(0.);
-                }
+            // Check if we have enough samples to process an FFT frame
+            if (inputBuffer_.size() >= constants::fftFrameSize)
+                processFFTFrame();
 
-                fft_->perform(fftWorkspace_.data(), fftWorkspace_.data(), false);
-                synthesis_->perform(fftWorkspace_.data(), pitchFactor_);
-                fft_->perform(fftWorkspace_.data(), fftWorkspace_.data(), true);
-
-                for (auto sa = 0; sa < constants::fftFrameSize; sa++)
-                    outputAccumulationBuffer_[sa] += 2. * getWindowFactor(sa, constants::fftFrameSize) *
-                                                     fftWorkspace_[sa].real() /
-                                                     ((constants::fftFrameSize / 2) * constants::oversamplingFactor);
-
-                for (auto sa = 0; sa < stepSize_; sa++)
-                    fifoOut_[sa] = outputAccumulationBuffer_[sa];
-
-                memmove(outputAccumulationBuffer_.data(), outputAccumulationBuffer_.data() + stepSize_,
-                        constants::fftFrameSize * sizeof(float));
-
-                for (auto sa = 0; sa < inFifoLatency_; sa++)
-                    fifoIn_[sa] = fifoIn_[sa + stepSize_];
-
-                sampleCounter_ = inFifoLatency_;
-            }
+            // Read processed output
+            channel[sa] = outputBuffer_.pop();
         }
 
-        for (auto sa = 0; sa < numSamples; sa++)
-            channel[sa] = processedSamples_[sa];
-
+        // Apply gain compensation
         channel.applyGain(gainCompensation_);
     }
 

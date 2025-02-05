@@ -7,6 +7,7 @@ add_library(seeleCore
         src/Factory.cpp
         src/Engine.cpp
         src/PitchShifter.cpp
+        src/CircularBuffer.cpp
         src/PitchShifterManager.cpp
         src/DelayProcessor.cpp
         src/GainProcessor.cpp
