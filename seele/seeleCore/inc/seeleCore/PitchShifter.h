@@ -35,8 +35,6 @@ namespace hidonash
         double gainCompensation_;
 
         long sampleCounter_;
-        const size_t stepSize_;
-        const size_t inFifoLatency_;
 
         std::unique_ptr<juce::dsp::FFT> fft_;
         std::array<juce::dsp::Complex<float>, 2 * config::constants::analysisSize> fftWorkspace_;
