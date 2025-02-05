@@ -21,12 +21,12 @@ namespace hidonash
                 setColour(juce::Slider::ColourIds::textBoxOutlineColourId, juce::Colours::transparentBlack);
             }
 
-            void drawLinearSlider(juce::Graphics& g, int x, int y, int width, int height, float sliderPos,
+            void drawLinearSlider(juce::Graphics& graphics, int x, int y, int width, int height, float sliderPos,
                                   float minSliderPos, float maxSliderPos, const juce::Slider::SliderStyle style,
                                   juce::Slider& slider) override
             {
                 const auto sliderWidth = slider.getWidth();
-                g.setColour(currentColour_);
+                graphics.setColour(currentColour_);
 
                 auto bigBarPath = juce::Path();
                 bigBarPath.addRectangle(x, y, 1.0f + sliderPos, 0.4f * height);
@@ -34,30 +34,28 @@ namespace hidonash
                 auto smallBarPath = juce::Path();
                 smallBarPath.addRectangle(x, y + 0.5f * height, 1.0f + width, height * 0.1f);
 
-                auto textBounds = juce::Rectangle<int>(x, y + 0.7f * height, 1.0f + width, height * 0.3f);
+                const auto textBounds = juce::Rectangle<int>(x, y + 0.7f * height, 1.0f + width, height * 0.3f);
 
-                g.fillPath(bigBarPath);
-                g.fillPath(smallBarPath);
-                g.setFont(Font::chicagoFLF());
-                g.setFont(sliderWidth * 0.125f);
-                g.drawText(name_, textBounds, juce::Justification::left);
+                graphics.fillPath(bigBarPath);
+                graphics.fillPath(smallBarPath);
+                graphics.setFont(Font::chicagoFLF());
+                graphics.setFont(sliderWidth * 0.125f);
+                graphics.drawText(name_, textBounds, juce::Justification::left);
             }
 
             void setHighlightColour()
             {
-                currentColour_ = highlightColour_;
+                currentColour_ = uiconstants::highlightColour;
             }
 
             void setBaseColour()
             {
-                currentColour_ = baseColour_;
+                currentColour_ = uiconstants::baseColour;
             }
 
         private:
             std::string name_;
-            juce::Colour baseColour_ {uiconstants::baseColour};
-            juce::Colour highlightColour_ {uiconstants::highlightColour};
-            juce::Colour currentColour_ {baseColour_};
+            juce::Colour currentColour_ {uiconstants::baseColour};
         };
     }
 

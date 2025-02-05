@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Config.h"
 #include "IAnalysis.h"
 
 
@@ -12,11 +13,7 @@ namespace hidonash
 
         ~Analysis() override = default;
 
-        std::array<float, config::constants::analysisSize> getMagnitudeBuffer() const override;
-
-        std::array<float, config::constants::analysisSize> getFrequencyBuffer() const override;
-
-        void perform(juce::dsp::Complex<float>* fftWorkspace) override;
+        AnalysisResult perform(juce::dsp::Complex<float>* fftWorkspace) override;
 
     private:
         int freqPerBin_;

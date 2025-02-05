@@ -56,7 +56,7 @@ namespace hidonash
 
                 for (auto ch = 0; ch < numChannels_; ++ch)
                 {
-                    delayProcessors_[ch][n]->setDelayInSeconds(std::floor(memberParameterSet_.getDistance(n)));
+                    delayProcessors_[ch][n]->setDelayInSeconds(memberParameterSet_.getDistance(n));
                     delayProcessors_[ch][n]->process(*audioBuffers_[n]->getChannel(ch));
                     gainProcessors_[ch][n]->setGainDb(memberParameterSet_.getGain(n));
                     gainProcessors_[ch][n]->process(*audioBuffers_[n]->getChannel(ch));

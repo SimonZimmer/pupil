@@ -50,7 +50,6 @@ private:
     juce::AudioProcessorValueTreeState parameters_;
     hidonash::MemberParameterSetPtr memberParameterSet_;
 
-    std::vector<std::string> programs_;
     int currentProgram_;
     hidonash::AudioProcessorPtr engine_;
 

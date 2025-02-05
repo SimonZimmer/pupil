@@ -1,64 +1,63 @@
 #include <cmath>
 
-#include "Synthesis.h"
 #include "Config.h"
+#include "Synthesis.h"
 
 
 namespace hidonash
 {
+    using namespace config;
+
     Synthesis::Synthesis(int freqPerBin, AnalysisPtr analysis)
     : analysis_(std::move(analysis))
     , freqPerBin_(freqPerBin)
-    , sumPhase_{}
-    , frequencyBuffer_{}
-    , magnitudeBuffer_{}
-    {
-    }
+    {}
 
     void Synthesis::perform(juce::dsp::Complex<float>* fftWorkspace, float pitchFactor)
     {
-        analysis_->perform(fftWorkspace);
-        
+        auto analysisResult = analysis_->perform(fftWorkspace);
+
         std::fill(magnitudeBuffer_.begin(), magnitudeBuffer_.end(), 0.0f);
         std::fill(frequencyBuffer_.begin(), frequencyBuffer_.end(), 0.0f);
-        
-        auto&& analysisMagnitudeBuffer = analysis_->getMagnitudeBuffer();
-        auto&& analysisFrequencyBuffer = analysis_->getFrequencyBuffer();
-        
-        const int halfFrameSize = config::constants::fftFrameSize / 2;
-        
-        for (int sa = 0; sa <= halfFrameSize; ++sa)
+
+        const auto analysisMagnitudeBuffer = analysisResult.magnitudeBuffer;
+        const auto analysisFrequencyBuffer = analysisResult.frequencyBuffer;
+
+        const int halfFrameSize = constants::fftFrameSize / 2;
+
+        for (auto sa = 0; sa <= halfFrameSize; ++sa)
         {
             const float targetIndex = static_cast<float>(sa) * pitchFactor;
             const int index = static_cast<int>(std::floor(targetIndex));
-            
+
             if (index >= 0 && index <= halfFrameSize)
             {
                 float weight = targetIndex - index;
                 magnitudeBuffer_[index] += analysisMagnitudeBuffer[sa] * (1.0f - weight);
-                
+
                 if (index + 1 <= halfFrameSize)
                     magnitudeBuffer_[index + 1] += analysisMagnitudeBuffer[sa] * weight;
-                
+
                 frequencyBuffer_[index] = analysisFrequencyBuffer[sa] * pitchFactor;
             }
         }
-        
-        for (int sa = 0; sa <= config::constants::fftFrameSize; ++sa)
+
+        const float twoPiOverOSF = 2.0f * constants::pi / static_cast<float>(constants::oversamplingFactor);
+        const float expectedPhaseIncrement = config::constants::expectedPhaseDifference;
+
+        for (auto sa = 0; sa <= constants::fftFrameSize; ++sa)
         {
-            const auto magnitude = magnitudeBuffer_[sa];
-            auto phase = frequencyBuffer_[sa];
-            
-            auto phaseDifference = phase - static_cast<double>(sa) * freqPerBin_;
-            phaseDifference /= freqPerBin_;
-            phaseDifference = 2.0 * M_PI * phaseDifference / config::constants::oversamplingFactor;
-            phaseDifference += static_cast<double>(sa) * config::constants::expectedPhaseDifference;
-            
+            const float magnitude = magnitudeBuffer_[sa];
+            float phase = frequencyBuffer_[sa];
+
+            const float saDouble = static_cast<float>(sa);
+            float phaseDifference = (phase - saDouble * freqPerBin_) / freqPerBin_;
+            phaseDifference = phaseDifference * twoPiOverOSF + saDouble * expectedPhaseIncrement;
+
             sumPhase_[sa] += phaseDifference;
             phase = sumPhase_[sa];
-            
-            fftWorkspace[sa].real(magnitude * std::cos(phase));
-            fftWorkspace[sa].imag(magnitude * std::sin(phase));
+
+            fftWorkspace[sa] = std::polar(magnitude, phase);
         }
     }
 }

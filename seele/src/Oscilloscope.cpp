@@ -1,7 +1,5 @@
 #include "Oscilloscope.h"
 
-#include <cmath>
-
 
 namespace hidonash
 {
@@ -12,10 +10,10 @@ namespace hidonash
         startTimer(refreshRateHz);
     }
 
-    void Oscilloscope::paint(juce::Graphics& g)
+    void Oscilloscope::paint(juce::Graphics& graphics)
     {
-        g.setOpacity(1.0f);
-        g.setColour(juce::Colours::red);
+        graphics.setOpacity(1.0f);
+        graphics.setColour(juce::Colours::red);
 
         const auto size = displayBuffer_.getNumSamples();
         auto&& readPointer = displayBuffer_.getReadPointer(0);
@@ -25,11 +23,11 @@ namespace hidonash
             const auto width = getLocalBounds().getWidth();
             const auto height = getLocalBounds().getHeight();
 
-            g.drawLine({(float) juce::jmap(i - 1, 0, size - 1, 0, width),
-                        juce::jmap(readPointer[i - 1], -1.0f, 1.0f, (float) height, 0.0f),
-                        (float) juce::jmap(i, 0, size - 1, 0, width),
-                        juce::jmap(readPointer[i], -1.0f, 1.0f, (float) height, 0.0f)},
-                       2);
+            graphics.drawLine({(float) juce::jmap(i - 1, 0, size - 1, 0, width),
+                               juce::jmap(readPointer[i - 1], -1.0f, 1.0f, (float) height, 0.0f),
+                               (float) juce::jmap(i, 0, size - 1, 0, width),
+                               juce::jmap(readPointer[i], -1.0f, 1.0f, (float) height, 0.0f)},
+                              2);
         }
     }
 

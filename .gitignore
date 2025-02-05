@@ -66,3 +66,12 @@ conan_paths.cmake
 
 #JUCE
 seele/resources/juce*
+
+**/*seeleCoreTestHost*
+**/*coreTestHost*
+**/*.json
+**/*.tcl
+conan_toolchain*
+**/*.sh
+**/*juce_vst3_helper*
+*CTestTestfile*

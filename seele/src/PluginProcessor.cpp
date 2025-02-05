@@ -15,13 +15,7 @@ NewProjectAudioProcessor::NewProjectAudioProcessor()
                      .withOutput("Output", juce::AudioChannelSet::stereo(), true))
 , parameters_(*this, nullptr, "Parameters", createParameters())
 , memberParameterSet_(std::make_unique<hidonash::MemberParameterSet>(parameters_))
-, currentProgram_(1)
-{
-    //TODO: add actual presets
-    programs_.emplace_back("program one");
-    programs_.emplace_back("program two");
-    programs_.emplace_back("program three");
-}
+{}
 
 const juce::String NewProjectAudioProcessor::getName() const
 {
@@ -50,22 +44,20 @@ double NewProjectAudioProcessor::getTailLengthSeconds() const
 
 int NewProjectAudioProcessor::getNumPrograms()
 {
-    return programs_.size();
+    return 1;
 }
 
 int NewProjectAudioProcessor::getCurrentProgram()
 {
-    return currentProgram_;
+    return 0;
 }
 
-void NewProjectAudioProcessor::setCurrentProgram(int index)
-{
-    currentProgram_ = index;
-}
+void NewProjectAudioProcessor::setCurrentProgram(int /*index*/)
+{}
 
 const juce::String NewProjectAudioProcessor::getProgramName(int index)
 {
-    return juce::String(programs_.at(index));
+    return "";
 }
 
 void NewProjectAudioProcessor::changeProgramName(int index, const juce::String& newName)
@@ -99,9 +91,6 @@ void NewProjectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
 
     engine_->process(inputBuffer);
 
-    buffer.copyFrom(0, 0, inputBuffer.getDataPointer(), inputBuffer.getNumSamples());
-    buffer.copyFrom(1, 0, inputBuffer.getDataPointer(), inputBuffer.getNumSamples());
-
     const std::lock_guard<std::mutex> lock(bufferMutex_);
     pushNextAudioBlock(buffer.getReadPointer(0), buffer.getNumSamples());
 }
@@ -117,10 +106,20 @@ juce::AudioProcessorEditor* NewProjectAudioProcessor::createEditor()
 }
 
 void NewProjectAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
-{}
+{
+    auto state = parameters_.copyState();
+    std::unique_ptr<juce::XmlElement> xml(state.createXml());
+    copyXmlToBinary(*xml, destData);
+}
 
 void NewProjectAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
-{}
+{
+    std::unique_ptr<juce::XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
+
+    if (xmlState.get() != nullptr)
+        if (xmlState->hasTagName(parameters_.state.getType()))
+            parameters_.replaceState(juce::ValueTree::fromXml(*xmlState));
+}
 
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
