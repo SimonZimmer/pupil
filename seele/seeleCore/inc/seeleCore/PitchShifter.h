@@ -22,7 +22,7 @@ namespace hidonash
 
         void process(core::IAudioBuffer::IChannel& channel) override;
 
-        void performFFTProcessing();
+        void performPitchShift();
 
         void setPitchRatio(float pitchRatio) override;
 

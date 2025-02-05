@@ -45,7 +45,17 @@ namespace hidonash
             sampleCounter_++;
 
             if (sampleCounter_ >= constants::fftFrameSize)
-                performFFTProcessing();
+            {
+                for (auto sa = 0; sa < constants::fftFrameSize; sa++)
+                {
+                    fftWorkspace_[sa].real(fifoIn_[sa] * getWindowFactor(sa, constants::fftFrameSize));
+                    fftWorkspace_[sa].imag(0.);
+                }
+
+                fft_->perform(fftWorkspace_.data(), fftWorkspace_.data(), false);
+
+                performPitchShift();
+            }
         }
 
         for (auto sa = 0; sa < numSamples; sa++)
@@ -54,15 +64,8 @@ namespace hidonash
         channel.applyGain(gainCompensation_);
     }
 
-    void PitchShifter::performFFTProcessing()
+    void PitchShifter::performPitchShift()
     {
-        for (auto sa = 0; sa < constants::fftFrameSize; sa++)
-        {
-            fftWorkspace_[sa].real(fifoIn_[sa] * getWindowFactor(sa, constants::fftFrameSize));
-            fftWorkspace_[sa].imag(0.);
-        }
-
-        fft_->perform(fftWorkspace_.data(), fftWorkspace_.data(), false);
         synthesis_->perform(fftWorkspace_.data(), pitchFactor_);
         fft_->perform(fftWorkspace_.data(), fftWorkspace_.data(), true);
 
