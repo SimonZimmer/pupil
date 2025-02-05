@@ -45,39 +45,42 @@ namespace hidonash
             sampleCounter_++;
 
             if (sampleCounter_ >= constants::fftFrameSize)
-            {
-                for (auto sa = 0; sa < constants::fftFrameSize; sa++)
-                {
-                    fftWorkspace_[sa].real(fifoIn_[sa] * getWindowFactor(sa, constants::fftFrameSize));
-                    fftWorkspace_[sa].imag(0.);
-                }
-
-                fft_->perform(fftWorkspace_.data(), fftWorkspace_.data(), false);
-                synthesis_->perform(fftWorkspace_.data(), pitchFactor_);
-                fft_->perform(fftWorkspace_.data(), fftWorkspace_.data(), true);
-
-                for (auto sa = 0; sa < constants::fftFrameSize; sa++)
-                    outputAccumulationBuffer_[sa] += 2. * getWindowFactor(sa, constants::fftFrameSize) *
-                                                     fftWorkspace_[sa].real() /
-                                                     ((constants::fftFrameSize / 2) * constants::oversamplingFactor);
-
-                for (auto sa = 0; sa < stepSize_; sa++)
-                    fifoOut_[sa] = outputAccumulationBuffer_[sa];
-
-                memmove(outputAccumulationBuffer_.data(), outputAccumulationBuffer_.data() + stepSize_,
-                        constants::fftFrameSize * sizeof(float));
-
-                for (auto sa = 0; sa < inFifoLatency_; sa++)
-                    fifoIn_[sa] = fifoIn_[sa + stepSize_];
-
-                sampleCounter_ = inFifoLatency_;
-            }
+                performFFTProcessing();
         }
 
         for (auto sa = 0; sa < numSamples; sa++)
             channel[sa] = processedSamples_[sa];
 
         channel.applyGain(gainCompensation_);
+    }
+
+    void PitchShifter::performFFTProcessing()
+    {
+        for (auto sa = 0; sa < constants::fftFrameSize; sa++)
+        {
+            fftWorkspace_[sa].real(fifoIn_[sa] * getWindowFactor(sa, constants::fftFrameSize));
+            fftWorkspace_[sa].imag(0.);
+        }
+
+        fft_->perform(fftWorkspace_.data(), fftWorkspace_.data(), false);
+        synthesis_->perform(fftWorkspace_.data(), pitchFactor_);
+        fft_->perform(fftWorkspace_.data(), fftWorkspace_.data(), true);
+
+        for (auto sa = 0; sa < constants::fftFrameSize; sa++)
+            outputAccumulationBuffer_[sa] += 2. * getWindowFactor(sa, constants::fftFrameSize) *
+                                             fftWorkspace_[sa].real() /
+                                             ((constants::fftFrameSize / 2) * constants::oversamplingFactor);
+
+        for (auto sa = 0; sa < stepSize_; sa++)
+            fifoOut_[sa] = outputAccumulationBuffer_[sa];
+
+        memmove(outputAccumulationBuffer_.data(), outputAccumulationBuffer_.data() + stepSize_,
+                constants::fftFrameSize * sizeof(float));
+
+        for (auto sa = 0; sa < inFifoLatency_; sa++)
+            fifoIn_[sa] = fifoIn_[sa + stepSize_];
+
+        sampleCounter_ = inFifoLatency_;
     }
 
     void PitchShifter::setPitchRatio(float pitchRatio)

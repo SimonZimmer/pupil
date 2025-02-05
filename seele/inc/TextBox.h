@@ -1,11 +1,8 @@
 #pragma once
 
-
-#include <exception>
 #include <juce_gui_basics/juce_gui_basics.h>
 
 #include <GraphicAssets.h>
-#include <mutex>
 
 #include "Font.h"
 #include "UiConstants.h"
