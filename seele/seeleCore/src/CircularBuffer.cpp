@@ -34,16 +34,6 @@ namespace hidonash
         return value;
     }
 
-    float CircularBuffer::peek(size_t offset) const
-    {
-        if (offset >= size_)
-            throw std::out_of_range("Offset exceeds buffer size");
-
-        const auto index = (readIndex_ + offset) % capacity_;
-
-        return buffer_[index];
-    }
-
     void CircularBuffer::clear()
     {
         readIndex_ = 0;

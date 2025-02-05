@@ -51,11 +51,7 @@ namespace hidonash
 
         ~TextBox()
         {
-            try
-            {
-                slider_.removeListener(this);
-            } catch (...)
-            {}
+            setLookAndFeel(nullptr);
         }
 
         void resized() override

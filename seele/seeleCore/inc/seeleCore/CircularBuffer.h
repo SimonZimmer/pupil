@@ -11,8 +11,6 @@ namespace hidonash
 
         float pop();
 
-        float peek(size_t offset = 0) const;
-
         void clear();
 
         size_t size() const;
