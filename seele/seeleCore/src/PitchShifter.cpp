@@ -42,37 +42,41 @@ namespace hidonash
             sampleCounter_++;
 
             if (sampleCounter_ >= constants::fftFrameSize)
-                performFFTProcessing();
+            {
+                for (auto sa = 0; sa < constants::fftFrameSize; ++sa)
+                {
+                    fftWorkspace_[sa].real(fifoIn_[sa] * getWindowFactor(sa, constants::fftFrameSize));
+                    fftWorkspace_[sa].imag(0.);
+                }
+
+                fft_->perform(fftWorkspace_.data(), fftWorkspace_.data(), false);
+                synthesis_->perform(fftWorkspace_.data(), pitchFactor_);
+                fft_->perform(fftWorkspace_.data(), fftWorkspace_.data(), true);
+
+                overlapAdd();
+            }
         }
 
         channel.applyGain(gainCompensation_);
     }
 
-    void PitchShifter::performFFTProcessing()
+    void PitchShifter::overlapAdd()
     {
-        for (auto sa = 0; sa < constants::fftFrameSize; ++sa)
-        {
-            fftWorkspace_[sa].real(fifoIn_[sa] * getWindowFactor(sa, constants::fftFrameSize));
-            fftWorkspace_[sa].imag(0.);
-        }
-
-        fft_->perform(fftWorkspace_.data(), fftWorkspace_.data(), false);
-        synthesis_->perform(fftWorkspace_.data(), pitchFactor_);
-        fft_->perform(fftWorkspace_.data(), fftWorkspace_.data(), true);
-
         for (auto sa = 0; sa < constants::fftFrameSize; ++sa)
             outputAccumulationBuffer_[sa] += 2. * getWindowFactor(sa, constants::fftFrameSize) *
                                              fftWorkspace_[sa].real() /
                                              ((constants::fftFrameSize / 2) * constants::oversamplingFactor);
 
-        for (auto sa = 0; sa < constants::stepSize; ++sa)
-            fifoOut_[sa] = outputAccumulationBuffer_[sa];
 
-        memmove(outputAccumulationBuffer_.data(), outputAccumulationBuffer_.data() + constants::stepSize,
-                constants::fftFrameSize * sizeof(float));
+        std::copy(outputAccumulationBuffer_.data(), outputAccumulationBuffer_.data() + constants::stepSize,
+                  fifoOut_.data());
 
-        for (auto sa = 0; sa < constants::inFifoLatency; ++sa)
-            fifoIn_[sa] = fifoIn_[sa + constants::stepSize];
+        std::copy(outputAccumulationBuffer_.begin() + constants::stepSize,
+                  outputAccumulationBuffer_.begin() + constants::stepSize + constants::fftFrameSize,
+                  outputAccumulationBuffer_.begin());
+
+        std::copy(fifoIn_.data() + constants::stepSize, fifoIn_.data() + constants::stepSize + constants::inFifoLatency,
+                  fifoIn_.data());
 
         sampleCounter_ = constants::inFifoLatency;
     }

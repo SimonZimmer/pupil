@@ -31,7 +31,7 @@ namespace hidonash
             subSectionBounds.removeFromBottom(sliderBounds.getHeight() - subsectionHeight);
 
             distanceSliders_.emplace_back(
-                std::make_unique<MiniSlider>("DISTANCE", "Distance (delay in ms) of the SEELE Member"));
+                std::make_unique<MiniSlider>("DISTANCE", "Distance (delay in s) of the SEELE Member"));
             distanceSliders_[n]->setBounds(subSectionBounds);
             distanceSliders_[n]->setTopLeftPosition(sliderBounds.getX(),
                                                     sliderBounds.getY() + sliderBounds.getHeight() + subsectionHeight);

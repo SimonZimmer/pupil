@@ -22,11 +22,11 @@ namespace hidonash
 
         void process(core::IAudioBuffer::IChannel& channel) override;
 
-        void performFFTProcessing();
-
         void setPitchRatio(float pitchRatio) override;
 
     private:
+        void overlapAdd();
+
         int freqPerBin_;
         IFactory& factory_;
         SynthesisPtr synthesis_;

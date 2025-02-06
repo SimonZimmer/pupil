@@ -55,7 +55,7 @@ namespace hidonash
         }
     }
 
-    void DelayProcessor::setDelayInSeconds(int delayInSeconds)
+    void DelayProcessor::setDelayInSeconds(float delayInSeconds)
     {
         const auto delayInSamples = convertSecondsToSamples(delayInSeconds);
 

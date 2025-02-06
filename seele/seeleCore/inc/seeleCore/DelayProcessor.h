@@ -15,7 +15,7 @@ namespace hidonash
 
         void process(core::IAudioBuffer::IChannel& input) override;
 
-        void setDelayInSeconds(int delayInSeconds) override;
+        void setDelayInSeconds(float delayInSeconds) override;
 
     private:
         float convertSecondsToSamples(float seconds);

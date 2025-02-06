@@ -12,7 +12,7 @@ namespace hidonash
     public:
         virtual ~IDelayProcessor() = default;
 
-        virtual void setDelayInSeconds(int delayInSeconds) = 0;
+        virtual void setDelayInSeconds(float delayInSeconds) = 0;
     };
 
     using DelayProcessorPtr = std::unique_ptr<IDelayProcessor>;

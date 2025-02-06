@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Config.h"
-#include "IFactory.h"
+#include "IAnalysis.h"
 #include "ISynthesis.h"
 
 
