@@ -31,7 +31,7 @@ namespace hidonash
             constexpr auto pi = 3.14159265358979323846;
             constexpr auto fftFrameSize = 2048;
             constexpr auto analysisSize = 2 * fftFrameSize;
-            constexpr auto oversamplingFactor = 16;
+            constexpr auto oversamplingFactor = 8;
             constexpr auto stepSize = fftFrameSize / oversamplingFactor;
             constexpr auto inFifoLatency = fftFrameSize - stepSize;
             constexpr auto expectedPhaseDifference = 2. * pi * (double) stepSize / (double) fftFrameSize;

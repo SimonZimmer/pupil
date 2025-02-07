@@ -9,7 +9,7 @@ add_subdirectory(seeleCore)
 add_subdirectory(resources)
 
 set(PLUGIN_NAME "SEELE")
-set(FORMATS VST3 AU)
+set(FORMATS VST3)
 juce_add_plugin(seelePlugin
         PLUGIN_MANUFACTURER_CODE HDNS
         PLUGIN_CODE SLPL

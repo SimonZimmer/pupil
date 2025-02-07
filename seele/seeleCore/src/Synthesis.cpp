@@ -45,21 +45,22 @@ namespace hidonash
             }
         }
 
-        for (int sa = 0; sa <= constants::fftFrameSize; ++sa)
-        {
-            const auto magnitude = magnitudeBuffer_[sa];
-            auto phase = frequencyBuffer_[sa];
+        const float twoPiOverOSF = 2.0f * constants::pi / static_cast<float>(constants::oversamplingFactor);
+        const float expectedPhaseIncrement = config::constants::expectedPhaseDifference;
 
-            auto phaseDifference = phase - static_cast<double>(sa) * freqPerBin_;
-            phaseDifference /= freqPerBin_;
-            phaseDifference = 2.0 * constants::pi * phaseDifference / config::constants::oversamplingFactor;
-            phaseDifference += static_cast<double>(sa) * config::constants::expectedPhaseDifference;
+        for (auto sa = 0; sa <= constants::fftFrameSize; ++sa)
+        {
+            const float magnitude = magnitudeBuffer_[sa];
+            float phase = frequencyBuffer_[sa];
+
+            const float saDouble = static_cast<float>(sa);
+            float phaseDifference = (phase - saDouble * freqPerBin_) / freqPerBin_;
+            phaseDifference = phaseDifference * twoPiOverOSF + saDouble * expectedPhaseIncrement;
 
             sumPhase_[sa] += phaseDifference;
             phase = sumPhase_[sa];
 
-            fftWorkspace[sa].real(magnitude * std::cos(phase));
-            fftWorkspace[sa].imag(magnitude * std::sin(phase));
+            fftWorkspace[sa] = std::polar(magnitude, phase);
         }
     }
 }
