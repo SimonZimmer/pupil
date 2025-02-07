@@ -6,6 +6,8 @@
 
 namespace hidonash
 {
+    using namespace config;
+
     Synthesis::Synthesis(int freqPerBin, AnalysisPtr analysis)
     : analysis_(std::move(analysis))
     , freqPerBin_(freqPerBin)
@@ -24,7 +26,7 @@ namespace hidonash
         auto&& analysisMagnitudeBuffer = analysis_->getMagnitudeBuffer();
         auto&& analysisFrequencyBuffer = analysis_->getFrequencyBuffer();
 
-        const int halfFrameSize = config::constants::fftFrameSize / 2;
+        const int halfFrameSize = constants::fftFrameSize / 2;
 
         for (int sa = 0; sa <= halfFrameSize; ++sa)
         {
@@ -43,14 +45,14 @@ namespace hidonash
             }
         }
 
-        for (int sa = 0; sa <= config::constants::fftFrameSize; ++sa)
+        for (int sa = 0; sa <= constants::fftFrameSize; ++sa)
         {
             const auto magnitude = magnitudeBuffer_[sa];
             auto phase = frequencyBuffer_[sa];
 
             auto phaseDifference = phase - static_cast<double>(sa) * freqPerBin_;
             phaseDifference /= freqPerBin_;
-            phaseDifference = 2.0 * M_PI * phaseDifference / config::constants::oversamplingFactor;
+            phaseDifference = 2.0 * constants::pi * phaseDifference / config::constants::oversamplingFactor;
             phaseDifference += static_cast<double>(sa) * config::constants::expectedPhaseDifference;
 
             sumPhase_[sa] += phaseDifference;

@@ -1,10 +1,13 @@
 #include <cmath>
 
 #include "Analysis.h"
+#include "Config.h"
 
 
 namespace hidonash
 {
+    using namespace config;
+
     Analysis::Analysis(int freqPerBin)
     : freqPerBin_(freqPerBin)
     , lastPhase_ {}
@@ -30,17 +33,14 @@ namespace hidonash
             const auto phase = atan2(imag, real);
             auto phaseDifference = phase - lastPhase_[sa];
             lastPhase_[sa] = phase;
-            phaseDifference -= static_cast<double>(sa) * config::constants::expectedPhaseDifference;
-            /* map delta phase into +/- Pi interval */
-            long qpd = phaseDifference / M_PI;
+            phaseDifference -= static_cast<double>(sa) * constants::expectedPhaseDifference;
+            long qpd = phaseDifference / constants::pi;
             if (qpd >= 0)
                 qpd += qpd & 1;
             else
                 qpd -= qpd & 1;
-            phaseDifference -= M_PI * static_cast<double>(qpd);
-            /* get deviation from bin frequency from the +/- Pi interval */
-            phaseDifference = config::constants::oversamplingFactor * phaseDifference / (2. * M_PI);
-            /* compute the k-th partials' true frequency */
+            phaseDifference -= constants::pi * static_cast<double>(qpd);
+            phaseDifference = constants::oversamplingFactor * phaseDifference / (2. * constants::pi);
             phaseDifference = static_cast<double>(sa) * freqPerBin_ + phaseDifference * freqPerBin_;
 
             analysisMagnitudeBuffer_[sa] = magnitude;

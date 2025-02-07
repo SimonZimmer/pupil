@@ -6,7 +6,6 @@
 
 #include <core/IAudioBuffer.h>
 
-#include "CircularBuffer.h"
 #include "Config.h"
 #include "IFactory.h"
 

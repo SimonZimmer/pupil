@@ -13,7 +13,7 @@ namespace hidonash
     {
         double getWindowFactor(size_t k, size_t windowSize)
         {
-            return (-.5 * cos(2. * M_PI * (double) k / (double) windowSize) + .5);
+            return (-.5 * cos(2. * constants::pi * (double) k / (double) windowSize) + .5);
         }
     }
 
