@@ -99,9 +99,6 @@ void NewProjectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
 
     engine_->process(inputBuffer);
 
-    buffer.copyFrom(0, 0, inputBuffer.getDataPointer(), inputBuffer.getNumSamples());
-    buffer.copyFrom(1, 0, inputBuffer.getDataPointer(), inputBuffer.getNumSamples());
-
     const std::lock_guard<std::mutex> lock(bufferMutex_);
     pushNextAudioBlock(buffer.getReadPointer(0), buffer.getNumSamples());
 }
