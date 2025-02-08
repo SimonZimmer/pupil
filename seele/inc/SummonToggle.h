@@ -2,8 +2,9 @@
 
 #include <juce_gui_basics/juce_gui_basics.h>
 
-#include "Font.h"
 #include <GraphicAssets.h>
+
+#include "UiConstants.h"
 
 
 namespace hidonash
@@ -16,21 +17,21 @@ namespace hidonash
             setColour(juce::ToggleButton::ColourIds::textColourId, juce::Colours::transparentBlack);
         }
 
-        void drawToggleButton(juce::Graphics& g, juce::ToggleButton& button, bool, bool) override
+        void drawToggleButton(juce::Graphics& graphics, juce::ToggleButton& button, bool, bool) override
         {
             const auto enabledColour = juce::Colour::fromRGBA(255, 245, 255, 255);
             const auto disabledColour = juce::Colour::fromRGBA(255, 245, 255, 30);
 
             if (button.getToggleState())
-                g.setColour(enabledColour);
+                graphics.setColour(enabledColour);
             else
-                g.setColour(disabledColour);
+                graphics.setColour(disabledColour);
 
             const auto buttonBounds = button.getLocalBounds().toFloat();
-            g.fillRect(buttonBounds);
+            graphics.fillRect(buttonBounds);
 
-            g.setFont(Font::chicagoFLF());
-            g.setFont(10.f);
+            graphics.setFont(uiconstants::font);
+            graphics.setFont(10.f);
         }
     };
 
@@ -59,6 +60,5 @@ namespace hidonash
 
     private:
         ToggleButtonLookAndFeel lookAndFeel_ {};
-        juce::GlowEffect glowEffect_ {};
     };
 }
