@@ -1,5 +1,3 @@
-#include <cmath>
-
 #include <gtest/gtest.h>
 
 #include <seeleCore/Synthesis.h>
@@ -37,8 +35,6 @@ namespace hidonash
         {
             InSequence sequence;
             EXPECT_CALL(*analysisMockPtr_, perform(_)).Times(1);
-            EXPECT_CALL(*analysisMockPtr_, getMagnitudeBuffer()).Times(1);
-            EXPECT_CALL(*analysisMockPtr_, getFrequencyBuffer()).Times(1);
         }
 
         pitchShifter.perform(fftWorkspace.data(), 0.5f);

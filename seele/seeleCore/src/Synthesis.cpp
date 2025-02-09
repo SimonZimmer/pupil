@@ -11,24 +11,21 @@ namespace hidonash
     Synthesis::Synthesis(int freqPerBin, AnalysisPtr analysis)
     : analysis_(std::move(analysis))
     , freqPerBin_(freqPerBin)
-    , sumPhase_ {}
-    , frequencyBuffer_ {}
-    , magnitudeBuffer_ {}
     {}
 
     void Synthesis::perform(juce::dsp::Complex<float>* fftWorkspace, float pitchFactor)
     {
-        analysis_->perform(fftWorkspace);
+        auto analysisResult = analysis_->perform(fftWorkspace);
 
         std::fill(magnitudeBuffer_.begin(), magnitudeBuffer_.end(), 0.0f);
         std::fill(frequencyBuffer_.begin(), frequencyBuffer_.end(), 0.0f);
 
-        auto&& analysisMagnitudeBuffer = analysis_->getMagnitudeBuffer();
-        auto&& analysisFrequencyBuffer = analysis_->getFrequencyBuffer();
+        const auto analysisMagnitudeBuffer = analysisResult.magnitudeBuffer;
+        const auto analysisFrequencyBuffer = analysisResult.frequencyBuffer;
 
         const int halfFrameSize = constants::fftFrameSize / 2;
 
-        for (int sa = 0; sa <= halfFrameSize; ++sa)
+        for (auto sa = 0; sa <= halfFrameSize; ++sa)
         {
             const float targetIndex = static_cast<float>(sa) * pitchFactor;
             const int index = static_cast<int>(std::floor(targetIndex));

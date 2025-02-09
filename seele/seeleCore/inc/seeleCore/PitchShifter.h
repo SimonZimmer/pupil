@@ -17,8 +17,6 @@ namespace hidonash
     public:
         PitchShifter(double sampleRate, IFactory& factory);
 
-        PitchShifter& operator=(PitchShifter&& other);
-
         void process(core::IAudioBuffer::IChannel& channel) override;
 
         void setPitchRatio(float pitchRatio) override;

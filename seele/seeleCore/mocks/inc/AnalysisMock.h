@@ -12,10 +12,6 @@ namespace hidonash
     public:
         ~AnalysisMock() override = default;
 
-        MOCK_CONST_METHOD0(getMagnitudeBuffer, std::array<float, config::constants::analysisSize>());
-
-        MOCK_CONST_METHOD0(getFrequencyBuffer, std::array<float, config::constants::analysisSize>());
-
-        MOCK_METHOD(void, perform, (juce::dsp::Complex<float>*));
+        MOCK_METHOD(AnalysisResult, perform, (juce::dsp::Complex<float>*) );
     };
 }
