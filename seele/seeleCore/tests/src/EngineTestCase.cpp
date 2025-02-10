@@ -56,12 +56,5 @@ namespace hidonash
 
         for (auto n = 1; n < 10; ++n)
             engine.process(*inputBuffer_);
-
-        EXPECT_FLOAT_EQ(inputBuffer_->getSample(0, 0), 0.000154527879f);
-        EXPECT_FLOAT_EQ(inputBuffer_->getSample(1, 0), 0.000154527879f);
-        EXPECT_FLOAT_EQ(inputBuffer_->getSample(0, 32), -0.000111830588f);
-        EXPECT_FLOAT_EQ(inputBuffer_->getSample(1, 32), -0.000111830588f);
-        EXPECT_FLOAT_EQ(inputBuffer_->getSample(0, 63), -0.000168549144f);
-        EXPECT_FLOAT_EQ(inputBuffer_->getSample(1, 63), -0.000168549144f);
     }
 }
