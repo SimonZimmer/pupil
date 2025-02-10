@@ -11,8 +11,8 @@ namespace hidonash
 {
     struct AnalysisResult
     {
-        std::array<float, config::constants::analysisSize> magnitudeBuffer;
-        std::array<float, config::constants::analysisSize> frequencyBuffer;
+        std::array<float, config::constants::fftFrameSize> magnitudeBuffer;
+        std::array<float, config::constants::fftFrameSize> frequencyBuffer;
     };
 
     class IAnalysis

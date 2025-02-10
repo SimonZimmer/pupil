@@ -22,7 +22,6 @@ namespace hidonash
     , factory_(factory)
     , synthesis_(factory_.createSynthesis(freqPerBin_, factory_.createAnalysis(freqPerBin_)))
     , pitchFactor_(1.0f)
-    , gainCompensation_(std::pow(10, (65. / 20.)))
     , sampleCounter_(0)
     , fft_(std::make_unique<juce::dsp::FFT>(static_cast<int>(std::log2(constants::fftFrameSize))))
     {
@@ -56,16 +55,13 @@ namespace hidonash
                 overlapAdd();
             }
         }
-
-        channel.applyGain(gainCompensation_);
     }
 
     void PitchShifter::overlapAdd()
     {
         for (auto sa = 0; sa < constants::fftFrameSize; ++sa)
-            outputAccumulationBuffer_[sa] += 2. * getWindowFactor(sa, constants::fftFrameSize) *
-                                             fftWorkspace_[sa].real() /
-                                             ((constants::fftFrameSize / 2) * constants::oversamplingFactor);
+            outputAccumulationBuffer_[sa] +=
+                2. * getWindowFactor(sa, constants::fftFrameSize) * fftWorkspace_[sa].real();
 
 
         std::copy(outputAccumulationBuffer_.data(), outputAccumulationBuffer_.data() + constants::stepSize,

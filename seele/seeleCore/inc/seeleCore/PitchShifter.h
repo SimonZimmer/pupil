@@ -34,10 +34,10 @@ namespace hidonash
         long sampleCounter_;
 
         std::unique_ptr<juce::dsp::FFT> fft_;
-        std::array<juce::dsp::Complex<float>, 2 * config::constants::analysisSize> fftWorkspace_;
+        std::array<juce::dsp::Complex<float>, config::constants::fftFrameSize> fftWorkspace_;
 
-        std::array<float, config::constants::analysisSize> fifoIn_;
-        std::array<float, config::constants::analysisSize> fifoOut_;
-        std::array<float, 2 * config::constants::analysisSize> outputAccumulationBuffer_;
+        std::array<float, config::constants::fftFrameSize> fifoIn_;
+        std::array<float, config::constants::fftFrameSize> fifoOut_;
+        std::array<float, config::constants::fftFrameSize> outputAccumulationBuffer_;
     };
 }
