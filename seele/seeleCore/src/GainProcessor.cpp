@@ -17,7 +17,7 @@ namespace hidonash
 
     void GainProcessor::process(core::IAudioBuffer::IChannel& input)
     {
-        for (auto sa = 0; sa < input.size(); ++sa)
+        for (size_t sa = 0; sa < input.size(); ++sa)
         {
             input[sa] *= gainValue_;
             gainValue_++;

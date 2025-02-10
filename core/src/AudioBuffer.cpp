@@ -22,13 +22,13 @@ namespace hidonash::core
 
     void AudioBuffer::Channel::fill(float value)
     {
-        for (auto sa = 0; sa < size_; ++sa)
+        for (size_t sa = 0; sa < size_; ++sa)
             buffer_[sa] = value;
     }
 
     void AudioBuffer::Channel::applyGain(float gain)
     {
-        for (auto sa = 0; sa < size_; ++sa)
+        for (size_t sa = 0; sa < size_; ++sa)
             buffer_[sa] *= gain;
     }
 
@@ -60,12 +60,12 @@ namespace hidonash::core
         *(data_[destChannel] + destSample) = newValue;
     }
 
-    int AudioBuffer::getNumChannels() const
+    size_t AudioBuffer::getNumChannels() const
     {
         return numChannels_;
     }
 
-    int AudioBuffer::getNumSamples() const
+    size_t AudioBuffer::getNumSamples() const
     {
         return numSamples_;
     }
@@ -93,8 +93,8 @@ namespace hidonash::core
 
     void AudioBuffer::fill(float value)
     {
-        for (auto ch = 0; ch < numChannels_; ++ch)
-            for (auto sa = 0; sa < numSamples_; ++sa)
+        for (size_t ch = 0; ch < numChannels_; ++ch)
+            for (size_t sa = 0; sa < numSamples_; ++sa)
                 setSample(ch, sa, value);
     }
 
@@ -104,10 +104,11 @@ namespace hidonash::core
             memcpy(data_[0], other.getDataPointer(), numChannels_ * numSamples_ * sizeof(float));
         else
         {
-            const auto channelsToCopy = std::min(other.getNumChannels(), numChannels_);
-            const auto samplesToCopy = std::min(numSamples_, other.getNumSamples());
+            const auto channelsToCopy =
+                static_cast<size_t>(std::min(static_cast<int>(other.getNumChannels()), static_cast<int>(numChannels_)));
+            const auto samplesToCopy = std::min(static_cast<int>(numSamples_), static_cast<int>(other.getNumSamples()));
 
-            for (auto c = size_t {0}; c < channelsToCopy; ++c)
+            for (size_t c = 0; c < channelsToCopy; ++c)
                 memcpy(data_[c], other.getDataPointer(), samplesToCopy * sizeof(float));
         }
     }
@@ -136,7 +137,8 @@ namespace hidonash::core
 
     void AudioBuffer::multiply(const std::vector<float>& from, size_t multiplyLength)
     {
-        const auto numChannels = std::min(numChannels_, static_cast<int>(from.size()));
+        const auto numChannels =
+            static_cast<size_t>(std::min(static_cast<int>(numChannels_), static_cast<int>(from.size())));
 
         for (size_t c = 0; c < numChannels; ++c)
             for (size_t i = 0; i < multiplyLength; ++i)

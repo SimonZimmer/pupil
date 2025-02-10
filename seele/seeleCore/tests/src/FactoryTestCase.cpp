@@ -1,17 +1,17 @@
-#include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 #include <core/IAudioBuffer.h>
 
 #include <seeleCore/Factory.h>
-#include <seeleCore/IAudioProcessor.h>
 #include <seeleCore/IAnalysis.h>
+#include <seeleCore/IAudioProcessor.h>
 #include <seeleCore/IPitchShifter.h>
 
 #include <AnalysisMock.h>
-#include <MemberParameterSetMock.h>
-#include <FactoryMock.h>
 #include <AudioBufferMock.h>
+#include <FactoryMock.h>
+#include <MemberParameterSetMock.h>
 
 
 namespace hidonash
@@ -20,7 +20,6 @@ namespace hidonash
 
     TEST(UnitTest_Factory, createEngine)
     {
-        auto pitchRatio = std::atomic<float>(1.f);
         auto memberParameterSetMock = MemberParameterSetMock();
         auto&& engine = Factory().createEngine(memberParameterSetMock, 44100., 64, 1);
         EXPECT_THAT(engine.get(), WhenDynamicCastTo<IAudioProcessor*>(NotNull()));
@@ -58,4 +57,3 @@ namespace hidonash
         EXPECT_THAT(audioBuffer.get(), WhenDynamicCastTo<core::IAudioBuffer*>(NotNull()));
     }
 }
-

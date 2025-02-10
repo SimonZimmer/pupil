@@ -36,6 +36,7 @@ namespace hidonash
         std::array<float, config::constants::fftFrameSize> fifoIn_;
         std::array<float, config::constants::fftFrameSize> fifoOut_;
         std::array<float, config::constants::fftFrameSize> outputAccumulationBuffer_;
-        long sampleCounter_;
+
+        size_t sampleCounter_;
     };
 }

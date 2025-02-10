@@ -23,7 +23,7 @@ namespace hidonash
     void DelayProcessor::process(core::IAudioBuffer::IChannel& input)
     {
         const auto bufferSize = input.size();
-        for (auto sa = 0; sa < bufferSize; ++sa)
+        for (size_t sa = 0; sa < bufferSize; ++sa)
         {
             circularBuffer_[writeIndex_] = input[sa];
 

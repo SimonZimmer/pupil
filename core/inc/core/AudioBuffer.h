@@ -43,9 +43,9 @@ namespace hidonash::core
 
         void setSample(int destChannel, int destSample, float newValue) override;
 
-        int getNumChannels() const override;
+        size_t getNumChannels() const override;
 
-        int getNumSamples() const override;
+        size_t getNumSamples() const override;
 
         float* getDataPointer() const override;
 
@@ -99,8 +99,8 @@ namespace hidonash::core
         };
 
     private:
-        int numChannels_ = 0;
-        int numSamples_ = 0;
+        size_t numChannels_ = 0;
+        size_t numSamples_ = 0;
 
         MemoryBlock memoryBlock_;
         float* const* data_;

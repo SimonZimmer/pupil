@@ -32,7 +32,6 @@ namespace hidonash
         const IMemberParameterSet& memberParameterSet_;
         core::AudioBuffer accumulationBuffer_;
         size_t numChannels_;
-        double sampleRate_;
         std::vector<float> lastDistances_;
     };
 }

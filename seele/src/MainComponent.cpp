@@ -18,7 +18,7 @@ namespace hidonash
         memberArea_ = std::make_unique<hidonash::MemberArea>();
         addAndMakeVisible(memberArea_.get());
 
-        for (auto n = 0; n < oscilloscope_.size(); ++n)
+        for (size_t n = 0; n < oscilloscope_.size(); ++n)
         {
             oscilloscope_[n] = std::make_unique<hidonash::Oscilloscope>(processor_, processor_.getBlockSize());
             addAndMakeVisible(oscilloscope_[n].get());

@@ -12,7 +12,7 @@ namespace hidonash
     public:
         ~DelayProcessorMock() = default;
 
-        MOCK_METHOD(void, setDelayInSeconds, (int) );
+        MOCK_METHOD(void, setDelayInSeconds, (float) );
 
         MOCK_METHOD(void, process, (core::IAudioBuffer::IChannel&) );
     };

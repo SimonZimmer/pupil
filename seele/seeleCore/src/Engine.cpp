@@ -9,23 +9,11 @@
 
 namespace hidonash
 {
-    namespace
-    {
-        int convertMsToSamples(const int ms, double sampleRate)
-        {
-            if (ms >= 0)
-                return 0;
-
-            return std::floor(static_cast<float>(ms / 1000.f * sampleRate));
-        }
-    }
-
     Engine::Engine(const IMemberParameterSet& memberParameterSet, double sampleRate, int samplesPerBlock,
                    size_t numChannels, FactoryPtr factory)
     : memberParameterSet_(memberParameterSet)
     , accumulationBuffer_(numChannels, samplesPerBlock)
     , numChannels_(numChannels)
-    , sampleRate_(sampleRate)
     {
         delayProcessors_.resize(numChannels_);
         gainProcessors_.resize(numChannels_);
@@ -33,7 +21,7 @@ namespace hidonash
         {
             pitchShifterManagers_.emplace_back(factory->createPitchShifterManager(sampleRate, numChannels_, *factory));
             audioBuffers_.emplace_back(factory->createAudioBuffer(numChannels_, samplesPerBlock));
-            for (auto ch = 0; ch < numChannels_; ++ch)
+            for (size_t ch = 0; ch < numChannels_; ++ch)
             {
                 delayProcessors_[ch].emplace_back(
                     factory->createDelayProcessor(config::parameters::maxDistanceInSeconds, 0.0f, sampleRate));
@@ -47,14 +35,14 @@ namespace hidonash
         accumulationBuffer_.fill(0.0f);
 
         int activeMembers = 0;
-        for (auto n = 0; n < config::constants::numMembers; ++n)
+        for (size_t n = 0; n < config::constants::numMembers; ++n)
             if (memberParameterSet_.getSummonState(n))
             {
                 audioBuffers_[n]->copyFrom(inputBuffer);
                 pitchShifterManagers_[n]->setPitchRatio(memberParameterSet_.getSanctity(n));
                 pitchShifterManagers_[n]->process(*audioBuffers_[n]);
 
-                for (auto ch = 0; ch < numChannels_; ++ch)
+                for (size_t ch = 0; ch < numChannels_; ++ch)
                 {
                     delayProcessors_[ch][n]->setDelayInSeconds(memberParameterSet_.getDistance(n));
                     delayProcessors_[ch][n]->process(*audioBuffers_[n]->getChannel(ch));

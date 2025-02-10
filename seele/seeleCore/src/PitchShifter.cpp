@@ -36,7 +36,7 @@ namespace hidonash
     {
         const auto numSamples = channel.size();
 
-        for (auto sa = 0; sa < numSamples; sa++)
+        for (size_t sa = 0; sa < numSamples; sa++)
         {
             if (sampleCounter_ < fifoIn_.size())
                 fifoIn_[sampleCounter_] = channel[sa];
@@ -53,7 +53,7 @@ namespace hidonash
 
             if (sampleCounter_ >= constants::fftFrameSize)
             {
-                for (auto sa = 0; sa < constants::fftFrameSize; ++sa)
+                for (size_t sa = 0; sa < constants::fftFrameSize; ++sa)
                 {
                     fftWorkspace_[sa].real(fifoIn_[sa] * getWindowFactor(sa, constants::fftFrameSize));
                     fftWorkspace_[sa].imag(0.0f);
