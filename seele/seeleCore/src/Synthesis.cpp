@@ -32,9 +32,8 @@ namespace hidonash
 
             if (index >= 0 && index <= halfFrameSize)
             {
-                float weight = targetIndex - index;
+                const float weight = targetIndex - index;
                 magnitudeBuffer_[index] += analysisMagnitudeBuffer[sa] * (1.0f - weight);
-
                 if (index + 1 <= halfFrameSize)
                     magnitudeBuffer_[index + 1] += analysisMagnitudeBuffer[sa] * weight;
 

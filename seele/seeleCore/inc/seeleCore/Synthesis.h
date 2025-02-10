@@ -20,9 +20,9 @@ namespace hidonash
         AnalysisPtr analysis_;
         int freqPerBin_;
 
-        std::array<float, config::constants::analysisSize / 2 + 1> sumPhase_;
-        std::array<float, config::constants::analysisSize> frequencyBuffer_;
-        std::array<float, config::constants::analysisSize> magnitudeBuffer_;
+        std::array<float, config::constants::fftFrameSize / 2 + 1> sumPhase_;
+        std::array<float, config::constants::fftFrameSize> frequencyBuffer_;
+        std::array<float, config::constants::fftFrameSize> magnitudeBuffer_;
     };
 
 }

@@ -50,7 +50,6 @@ private:
     juce::AudioProcessorValueTreeState parameters_;
     hidonash::MemberParameterSetPtr memberParameterSet_;
 
-    int currentProgram_;
     hidonash::AudioProcessorPtr engine_;
 
     juce::AudioBuffer<float> visualizationBuffer_;

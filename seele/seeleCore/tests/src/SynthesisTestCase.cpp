@@ -30,7 +30,7 @@ namespace hidonash
     TEST_F(UnitTest_Synthesis, process)
     {
         auto&& pitchShifter = Synthesis(44100, std::move(analysisMock_));
-        auto&& fftWorkspace = std::array<juce::dsp::Complex<float>, 2 * config::constants::analysisSize>();
+        auto&& fftWorkspace = std::array<juce::dsp::Complex<float>, 2 * config::constants::fftFrameSize>();
 
         {
             InSequence sequence;

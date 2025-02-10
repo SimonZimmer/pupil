@@ -55,12 +55,12 @@ int NewProjectAudioProcessor::getCurrentProgram()
 void NewProjectAudioProcessor::setCurrentProgram(int /*index*/)
 {}
 
-const juce::String NewProjectAudioProcessor::getProgramName(int index)
+const juce::String NewProjectAudioProcessor::getProgramName(int /*index*/)
 {
     return "";
 }
 
-void NewProjectAudioProcessor::changeProgramName(int index, const juce::String& newName)
+void NewProjectAudioProcessor::changeProgramName(int /*index*/, const juce::String& /*newName*/)
 {}
 
 void NewProjectAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
@@ -83,7 +83,7 @@ bool NewProjectAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts
     return !(layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet());
 }
 
-void NewProjectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void NewProjectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& /*midiMessages*/)
 {
     auto&& inputBuffer =
         hidonash::core::AudioBuffer(buffer.getArrayOfWritePointers(), static_cast<int>(buffer.getNumChannels()),

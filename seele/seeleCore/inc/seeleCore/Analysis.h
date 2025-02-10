@@ -18,9 +18,9 @@ namespace hidonash
     private:
         int freqPerBin_;
 
-        std::array<float, config::constants::analysisSize / 2 + 1> lastPhase_;
-        std::array<float, config::constants::analysisSize> analysisFrequencyBuffer_;
-        std::array<float, config::constants::analysisSize> analysisMagnitudeBuffer_;
+        std::array<float, config::constants::fftFrameSize / 2 + 1> lastPhase_;
+        std::array<float, config::constants::fftFrameSize> analysisFrequencyBuffer_;
+        std::array<float, config::constants::fftFrameSize> analysisMagnitudeBuffer_;
     };
 
 }

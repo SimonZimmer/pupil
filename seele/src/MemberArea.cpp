@@ -38,8 +38,6 @@ namespace hidonash
             addAndMakeVisible(*distanceSliders_[n]);
 
             distanceTextBoxes_.emplace_back(std::make_unique<TextBox>(*distanceSliders_[n]));
-            auto distanceTextBoxBounds = subSectionBounds;
-            const auto distanceTextBoxHeight = subSectionBounds.getHeight() + 0.5f * subsectionHeight;
             distanceTextBoxes_[n]->setBounds(subSectionBounds);
             distanceTextBoxes_[n]->setTopLeftPosition(sliderBounds.getX() + 0.05f * sliderBounds.getWidth(),
                                                       sliderBounds.getY() + sliderBounds.getHeight() +
@@ -53,8 +51,6 @@ namespace hidonash
             addAndMakeVisible(*gainSliders_[n]);
 
             gainTextBoxes_.emplace_back(std::make_unique<TextBox>(*gainSliders_[n]));
-            auto gainTextBoxBounds = subSectionBounds;
-            const auto gainTextBoxHeight = subSectionBounds.getHeight() + 0.5f * subsectionHeight;
             gainTextBoxes_[n]->setBounds(subSectionBounds);
             gainTextBoxes_[n]->setTopLeftPosition(sliderBounds.getX() + 0.05f * sliderBounds.getWidth(),
                                                   sliderBounds.getY() + sliderBounds.getHeight() +

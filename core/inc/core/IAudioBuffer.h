@@ -31,9 +31,9 @@ namespace hidonash::core
 
         virtual void setSample(int destChannel, int destSample, float newValue) = 0;
 
-        virtual int getNumChannels() const = 0;
+        virtual size_t getNumChannels() const = 0;
 
-        virtual int getNumSamples() const = 0;
+        virtual size_t getNumSamples() const = 0;
 
         virtual float* getDataPointer() const = 0;
 

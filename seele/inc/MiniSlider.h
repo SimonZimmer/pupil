@@ -22,8 +22,8 @@ namespace hidonash
             }
 
             void drawLinearSlider(juce::Graphics& graphics, int x, int y, int width, int height, float sliderPos,
-                                  float minSliderPos, float maxSliderPos, const juce::Slider::SliderStyle style,
-                                  juce::Slider& slider) override
+                                  float /*minSliderPos*/, float /*maxSliderPos*/,
+                                  const juce::Slider::SliderStyle /*style*/, juce::Slider& slider) override
             {
                 const auto sliderWidth = slider.getWidth();
                 graphics.setColour(currentColour_);
@@ -78,7 +78,7 @@ namespace hidonash
             setLookAndFeel(nullptr);
         }
 
-        void mouseEnter(const juce::MouseEvent& e) override
+        void mouseEnter(const juce::MouseEvent&) override
         {
             setMouseCursor(juce::MouseCursor::StandardCursorType::PointingHandCursor);
             lookAndFeel_.setHighlightColour();
