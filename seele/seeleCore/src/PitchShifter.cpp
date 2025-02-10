@@ -11,9 +11,10 @@ namespace hidonash
 
     namespace
     {
-        double getWindowFactor(size_t k, size_t windowSize)
+        float getWindowFactor(int k, int windowSize)
         {
-            return (-.5 * cos(2. * constants::pi * (double) k / (double) windowSize) + .5);
+            return (-0.5f * std::cos(2.0f * constants::pi * static_cast<float>(k) / static_cast<float>(windowSize)) +
+                    0.5f);
         }
     }
 
@@ -22,8 +23,8 @@ namespace hidonash
     , factory_(factory)
     , synthesis_(factory_.createSynthesis(freqPerBin_, factory_.createAnalysis(freqPerBin_)))
     , pitchFactor_(1.0f)
-    , sampleCounter_(0)
     , fft_(std::make_unique<juce::dsp::FFT>(static_cast<int>(std::log2(constants::fftFrameSize))))
+    , sampleCounter_(0)
     {
         fifoIn_.fill(0.0f);
         fifoOut_.fill(0.0f);
@@ -45,6 +46,8 @@ namespace hidonash
 
             if (outputIndex < fifoOut_.size())
                 channel[sa] = fifoOut_[outputIndex];
+            else
+                channel[sa] = 0.0f;
 
             sampleCounter_++;
 
@@ -53,7 +56,7 @@ namespace hidonash
                 for (auto sa = 0; sa < constants::fftFrameSize; ++sa)
                 {
                     fftWorkspace_[sa].real(fifoIn_[sa] * getWindowFactor(sa, constants::fftFrameSize));
-                    fftWorkspace_[sa].imag(0.);
+                    fftWorkspace_[sa].imag(0.0f);
                 }
 
                 fft_->perform(fftWorkspace_.data(), fftWorkspace_.data(), false);
@@ -69,7 +72,7 @@ namespace hidonash
     {
         for (auto sa = 0; sa < constants::fftFrameSize; ++sa)
             outputAccumulationBuffer_[sa] +=
-                2. * getWindowFactor(sa, constants::fftFrameSize) * fftWorkspace_[sa].real();
+                2.0f * getWindowFactor(sa, constants::fftFrameSize) * fftWorkspace_[sa].real();
 
 
         std::copy(outputAccumulationBuffer_.data(), outputAccumulationBuffer_.data() + constants::stepSize,
